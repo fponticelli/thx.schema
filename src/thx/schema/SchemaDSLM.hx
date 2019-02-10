@@ -133,6 +133,7 @@ class SchemaDSLM {
           expr: EObjectDecl(fields.map(function(field) {
               var name = field.name;
               return {
+                quotes: haxe.macro.QuoteStatus.Unquoted,
                 field: name,
                 expr: macro $i{name}
               }
@@ -157,6 +158,7 @@ class SchemaDSLM {
     var body = EObjectDecl(fields.map(function(field) {
           var name = field.name;
           return {
+            quotes: haxe.macro.QuoteStatus.Unquoted,
             field: name,
             expr: macro $i{name}
           }

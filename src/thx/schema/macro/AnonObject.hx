@@ -32,6 +32,7 @@ class AnonObject<T> {
 
   public function toSetterObject() {
     return createExpressionFromDef(EObjectDecl(fields.map(f -> {
+      quotes: haxe.macro.QuoteStatus.Unquoted,
       field: f.name,
       expr: macro $i{f.name}
     })));

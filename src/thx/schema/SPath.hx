@@ -14,7 +14,7 @@ enum SPathADT {
 
 abstract SPath (SPathADT) from SPathADT to SPathADT {
   public function render(): String return switch this {
-    case Property(name, xs): 
+    case Property(name, xs):
       if (xs == Empty) name else '${xs.render()}.$name';
 
     case Index(idx, xs):
@@ -29,7 +29,7 @@ abstract SPath (SPathADT) from SPathADT to SPathADT {
   @:op(A / B)
   public function property(name: String): SPath
     return Property(name, this);
-  
+
   // fun fact: in haXe, multiplication and division have the same precedence,
   // and always associate to the left. So we can use * for array indexing,
   // and avoid a lot of spurious parentheses when creating complex paths.
@@ -40,7 +40,7 @@ abstract SPath (SPathADT) from SPathADT to SPathADT {
   @:op(A + B)
   public function append(other: SPath): SPath return switch this {
     case Property(name, xs): Property(name, xs.append(other));
-    case Index(idx, xs): Index(idx, xs.append(other));                             
+    case Index(idx, xs): Index(idx, xs.append(other));
     case Empty: this;
   }
 

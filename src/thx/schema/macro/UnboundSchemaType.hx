@@ -78,6 +78,8 @@ class UnboundSchemaType {
       fields: type.fields.map(function(f) return {
         doc: f.doc,
         isPublic: f.isPublic,
+        isExtern: false,
+        isFinal: false,
         kind: f.kind,
         meta: f.meta,
         name: f.name,

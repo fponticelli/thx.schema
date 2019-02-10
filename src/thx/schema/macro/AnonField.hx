@@ -19,6 +19,8 @@ class AnonField {
   public function toClassField(): ClassField {
     return {
       isPublic: true,
+      isFinal: false,
+      isExtern: false,
       kind: FVar(AccNormal, AccNormal),
       meta: null,
       name: name,

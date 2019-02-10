@@ -54,6 +54,7 @@ class Utils {
       pos: Context.currentPos(),
       fields: createRef([]),
       statics: createRef([]),
+      isFinal: false,
       isPrivate: false,
       constructor: null,
       isInterface: false,
