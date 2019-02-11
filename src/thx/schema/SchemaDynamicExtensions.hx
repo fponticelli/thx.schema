@@ -107,6 +107,11 @@ class SchemaDynamicExtensions {
           }
         );
 
+      case MetaSchema(prop, ms, sf, _):
+        parseProperty(v, prop, parseDynamic.bind(ms, err, _), ParseError.new.bind(_, path).compose(err)).flatMapV(
+          mv -> parseObject(path, sf(mv), err, v)
+        );
+
       case LazySchema(base):
         parseDynamic0(base(), path, err, v);
     };
@@ -145,7 +150,13 @@ class SchemaDynamicExtensions {
   public static function renderDynamic0<E, X, A>(schemaf: SchemaF<E, X, A>, value: A): Dynamic {
     return switch schemaf {
       case IntSchema:   value;
-      case FloatSchema: value;
+
+      case FloatSchema:
+        if (Math.isFinite(value)) value
+        else if (Math.isNaN(value)) "NaN"
+        else if (value > 0) "Inf";
+        else "-Inf";
+
       case StrSchema:   value;
       case BoolSchema:  value;
       case AnySchema:   value;
@@ -182,6 +193,19 @@ class SchemaDynamicExtensions {
 
       case LazySchema(base):
         renderDynamic0(base(), value);
+
+      case MetaSchema(metaProp, ms, sf, g):
+        function objSchema<B, C>(metaSchema: AnnotatedSchema<E, X, B>, valueProps: ObjectBuilder<E, X, C>): ObjectBuilder<E, X, { meta: B, value: C }> {
+          return SchemaDSL.ap2(
+            (m: B, v: C) -> { meta: m, value: v },
+            SchemaDSL.required(metaProp, metaSchema, (v: { meta: B, value: C }) -> v.meta),
+            valueProps.contramap((v: { meta: B, value: C }) -> v.value)
+          );
+        }
+
+        var metadata = g(value);
+        var metaValue = { meta: metadata, value: value };
+        renderDynObject(objSchema(ms, sf(metadata)), metaValue);
     }
   }
 

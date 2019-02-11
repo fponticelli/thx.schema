@@ -38,6 +38,10 @@ enum SchemaF<E, X, A> {
   // value type.
   ParseSchema<B, C>(base: SchemaF<E, X, B>, f: B -> ParseResult<E, B, C>, g: C -> B): SchemaF<E, X, C>;
 
+  // Allow objects where the value of a specified property can be interpreted to generate 
+  // schema for the remaining properties.
+  MetaSchema<B, C>(metaProp: String, metaSchema: AnnotatedSchema<E, X, B>, valueProps: B -> ObjectBuilder<E, X, C>, metaf: C -> B): SchemaF<E, X, C>;
+
   // lazy wrapper for schema values to permit recursive schema definitions.
   LazySchema<B>(delay: Void -> SchemaF<E, X, B>): SchemaF<E, X, B>;
 }
@@ -51,7 +55,10 @@ class AnnotatedSchema<E, X, A> {
     this.schema = schema;
   }
 
-  // FIXME: This should take SPath -> X -> Y
+  public function annotate<Y>(loc: SPath, f: SPath -> X -> Y): AnnotatedSchema<E, Y, A> {
+    return new AnnotatedSchema(f(loc, annotation), SchemaFExtensions.annotate(schema, loc, f));
+  }
+
   public function mapAnnotation<Y>(f: X -> Y): AnnotatedSchema<E, Y, A> {
     return new AnnotatedSchema(f(annotation), SchemaFExtensions.mapAnnotation(schema, f));
   }
